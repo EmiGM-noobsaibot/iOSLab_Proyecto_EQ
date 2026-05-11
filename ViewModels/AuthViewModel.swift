@@ -1,8 +1,8 @@
 import Foundation
-import Supabase
 #if canImport(Combine)
 import Combine
 #endif
+
 @MainActor
 class AuthViewModel: ObservableObject {
     @Published var email = ""
@@ -32,13 +32,12 @@ class AuthViewModel: ObservableObject {
         do {
             try await AuthService.shared.signIn(email: email, password: password)
         } catch {
-            errorMessage = "Fallo al iniciar sesión. Revisa tus credenciales institucionales."
-            print("Login error: \(error.localizedDescription)")
+            errorMessage = "Fallo al iniciar sesión."
         }
         isLoading = false
     }
     
-    /// Registra en Supabase un nuevo User
+    /// Registra un nuevo User (Simulado)
     func register() async {
         guard isFormValid, !nombre.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             errorMessage = "Asegúrate de llenar tu nombre completo también."
@@ -47,12 +46,15 @@ class AuthViewModel: ObservableObject {
         
         isLoading = true
         errorMessage = nil
+        
+        // Simular latencia de red
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        
+        // Asumimos exito
         do {
-            // Nota: Aquí registramos el Auth con correo. Si ocupamos añadirlo a la tabla pública `Usuarios`,
-            // podríamos requerir usar una Function/Trigger en Supabase (Hook) o invocar un `.insert()`
-            let _ = try await supabase.auth.signUp(email: email, password: password)
+            try await AuthService.shared.signIn(email: email, password: password)
         } catch {
-            errorMessage = "Fallo al crear cuenta: \(error.localizedDescription)"
+            errorMessage = "Fallo al crear cuenta."
         }
         isLoading = false
     }

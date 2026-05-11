@@ -1,39 +1,34 @@
 import Foundation
-import Supabase
 #if canImport(Combine)
 import Combine
 #endif
+
 @MainActor
 final class AuthService: ObservableObject {
     /// Singleton para poder accederlo de forma global o inyectarlo en el Environment de SwiftUI
     static let shared = AuthService()
     
-    @Published var currentUser: User?
+    // Eliminamos la dependencia del modelo User de Supabase para esta versión simplificada
+    @Published var currentUser: String? = "1234567" // Matrícula falsa de prueba
     @Published var isAuthenticated: Bool = false
-    @Published var isLoading: Bool = true
+    @Published var isLoading: Bool = false // Empezamos en false
     
     private init() {
-        Task {
-            await observeAuthState()
-        }
+        // En la versión fácil, podemos iniciar deslogueados o logueados por defecto.
+        // Lo dejaremos deslogueado para que se vea la pantalla de login.
     }
     
-    /// Escucha y actualiza en tiempo real los cambios de sesión (Login, Logout, Token Expirado)
-    private func observeAuthState() async {
-        for await state in await supabase.auth.authStateChanges {
-            self.currentUser = state.session?.user
-            self.isAuthenticated = state.session != nil
-            self.isLoading = false
-        }
-    }
-    
-    /// Inicia sesión usando correo y contraseña.
+    /// Inicia sesión (Versión Mock)
     func signIn(email: String, password: String) async throws {
-        try await supabase.auth.signIn(email: email, password: password)
+        // Simulamos un pequeño retraso de red
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        self.isAuthenticated = true
+        self.currentUser = "1234567"
     }
     
-    /// Cierra la sesión activa borrando el JWT.
+    /// Cierra la sesión (Versión Mock)
     func signOut() async throws {
-        try await supabase.auth.signOut()
+        self.isAuthenticated = false
+        self.currentUser = nil
     }
 }

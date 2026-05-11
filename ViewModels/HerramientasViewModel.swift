@@ -1,15 +1,15 @@
 import Foundation
-import Supabase
 #if canImport(Combine)
 import Combine
 #endif
+
 @MainActor
 class HerramientasViewModel: ObservableObject {
     @Published var notas: [RecordatorioPersonal] = []
     @Published var alarmas: [Alarma] = []
     @Published var isLoading = false
     
-    // UUID / Matrícula desde el Auth global para evitar que vea los de otros alumnos
+    // UUID / Matrícula desde el Auth global
     var matriculaAlumno: Double? = nil 
     
     init() {}
@@ -18,56 +18,39 @@ class HerramientasViewModel: ObservableObject {
         guard let matricula = matriculaAlumno else { return }
         isLoading = true
         
-        do {
-            // Nota: Podríamos usar un TaskGroup para bajar al mismo tiempo,
-            // pero para simplificar hacemos awaits secuenciales muy eficientes
-            let misNotas: [RecordatorioPersonal] = try await supabase
-                .from("Recordatorios_Personales")
-                .select()
-                .eq("usuario_id", value: matricula)
-                .order("created_at", ascending: false) // Las nuevas arriba
-                .execute()
-                .value
+        try? await Task.sleep(nanoseconds: 300_000_000)
+        
+        // Simular lectura de BD local
+        self.notas = MockDatabase.shared.recordatorios
+            .filter { $0.usuarioId == matricula }
+            .sorted { ($0.createdAt ?? "") > ($1.createdAt ?? "") }
             
-            let misAlarmas: [Alarma] = try await supabase
-                .from("Alarmas")
-                .select()
-                .eq("usuario_id", value: matricula)
-                .execute()
-                .value
+        self.alarmas = MockDatabase.shared.alarmas
+            .filter { $0.usuarioId == matricula }
             
-            self.notas = misNotas
-            self.alarmas = misAlarmas
-            
-        } catch {
-            print("Error bajando herramientas personales: \(error)")
-        }
         isLoading = false
     }
     
-    /// Inserta una nueva nota directamente pasando por el cumplimiento de RLS.
+    /// Inserta una nueva nota
     func crearNotaRapida(titulo: String, descripcion: String, prioridad: PriorityLevel) async {
         guard let matricula = matriculaAlumno else { return }
         
-        // Documento Temporal Codable
-        struct NuevaNota: Codable {
-            let usuario_id: Double
-            let titulo: String
-            let nota: String
-            let prioridad: PriorityLevel
-        }
+        let nueva = RecordatorioPersonal(
+            id: UUID(),
+            usuarioId: matricula,
+            titulo: titulo,
+            nota: descripcion,
+            prioridad: prioridad,
+            fechaRecordatorio: nil,
+            horaRecordatorio: nil,
+            createdAt: Date().description
+        )
         
-        let doc = NuevaNota(usuario_id: matricula, titulo: titulo, nota: descripcion, prioridad: prioridad)
-        
-        do {
-            _ = try await supabase.from("Recordatorios_Personales").insert(doc).execute()
-            await fetchHerramientas() // Refresca lista silenciosamente despues de crear
-        } catch {
-            print("No se pudo agregar nota: \(error)")
-        }
+        MockDatabase.shared.recordatorios.append(nueva)
+        await fetchHerramientas() // Refresca lista
     }
     
-    // Función de exportación para la UI y la Prueba Parametrizada de Swift Testing
+    // Función de exportación
     func procesarHoraParaDB(horaNative: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
@@ -75,31 +58,22 @@ class HerramientasViewModel: ObservableObject {
         return formatter.string(from: horaNative)
     }
     
-    /// Crea y guarda una Alarma personal en Supabase
+    /// Crea y guarda una Alarma personal
     func crearAlarma(titulo: String, hora: Date) async {
         guard let matricula = matriculaAlumno else { return }
         
         let horaFormat = procesarHoraParaDB(horaNative: hora)
         
-        struct NuevaAlarma: Codable {
-            let usuario_id: Double
-            let titulo: String
-            let hora: String
-            let activa: Bool
-        }
-        
-        let doc = NuevaAlarma(
-            usuario_id: matricula,
+        let nueva = Alarma(
+            id: UUID(),
+            usuarioId: matricula,
             titulo: titulo.isEmpty ? "Alarma" : titulo,
             hora: horaFormat,
+            fecha: nil,
             activa: true
         )
         
-        do {
-            _ = try await supabase.from("Alarmas").insert(doc).execute()
-            await fetchHerramientas() // Actualiza inmediatamente la pantalla
-        } catch {
-            print("Error al agregar alarma: \(error.localizedDescription)")
-        }
+        MockDatabase.shared.alarmas.append(nueva)
+        await fetchHerramientas() // Actualiza inmediatamente la pantalla
     }
 }

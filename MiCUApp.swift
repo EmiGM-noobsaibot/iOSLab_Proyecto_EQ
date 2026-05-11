@@ -46,7 +46,6 @@ struct MainTabViewPlaceholder: View {
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
             
-            Text("Tu sesión fue iniciada exitosamente. Tu JWT ahora te protege.")
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)

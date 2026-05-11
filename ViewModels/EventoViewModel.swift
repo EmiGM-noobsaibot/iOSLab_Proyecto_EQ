@@ -1,43 +1,7 @@
 import Foundation
-#if canImport(Supabase)
-import Supabase
-#endif
 #if canImport(Combine)
 import Combine
 #endif
-
-/// Estructura separada del Modelo Base ya que al crear (INSERT), omitimos el ID (Auto-inrementable) de PostgreSQL
-struct CreateEventoRequest: Codable, Sendable {
-    let nombreEvento: String
-    let categoria: CategoriaAFI
-    let fechaEvento: String
-    let horaInicio: String
-    let horaFin: String
-    let lugar: String
-    let aforo: Double
-    let descripcion: String
-    let imageUrl: String?
-    let telefonoResponsable: String
-    let departamentoSolicitante: String
-    let organizadorId: Double
-    let estado: String
-    
-    enum CodingKeys: String, CodingKey {
-        case nombreEvento = "nombre_Evento"
-        case categoria
-        case fechaEvento = "fecha_evento"
-        case horaInicio = "hora_Inicio"
-        case horaFin = "hora_Fin"
-        case lugar
-        case aforo
-        case descripcion
-        case imageUrl = "image_url"
-        case telefonoResponsable = "telefono_Responsable"
-        case departamentoSolicitante = "departamento_Solicitante"
-        case organizadorId = "organizador_id"
-        case estado
-    }
-}
 
 @MainActor
 class EventoViewModel: ObservableObject {
@@ -58,7 +22,7 @@ class EventoViewModel: ObservableObject {
     
     init() {}
     
-    // Formateadores privados estrictos para inyectarlos limpiamente en PostgreSQL (DATE, TIME)
+    // Formateadores privados
     private var posgresDateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -87,37 +51,37 @@ class EventoViewModel: ObservableObject {
         let stringHoraInicio = posgresTimeFormatter.string(from: horaInicio)
         let stringHoraFin = posgresTimeFormatter.string(from: horaFin)
         
-        let nuevoEvento = CreateEventoRequest(
-            nombreEvento: nombreEvento.trimmingCharacters(in: .whitespaces),
-            categoria: categoria,
-            fechaEvento: stringFecha,
-            horaInicio: stringHoraInicio,
-            horaFin: stringHoraFin,
-            lugar: lugar.trimmingCharacters(in: .whitespaces),
-            aforo: aforoNum,
-            descripcion: descripcion,
-            imageUrl: nil, // Expandible a Storage futuro
-            telefonoResponsable: telefonoResponsable,
-            departamentoSolicitante: departamentoSolicitante,
-            organizadorId: matriculaOrganizador,
-            estado: "publicado"
-        )
-        
         isLoading = true
         errorMessage = nil
         isSuccess = false
         
-        do {
-            _ = try await supabase
-                .from("Eventos")
-                .insert(nuevoEvento)
-                .execute()
-                
-            isSuccess = true
-            resetForm()
-        } catch {
-            errorMessage = "Ocurrió un error al subir el evento."
-        }
+        // Simular latencia
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        
+        let nuevoId = (MockDatabase.shared.eventos.map { $0.id }.max() ?? 0) + 1
+        
+        let nuevoEvento = Evento(
+            id: nuevoId,
+            fechaEvento: stringFecha,
+            nombreEvento: nombreEvento.trimmingCharacters(in: .whitespaces),
+            lugar: lugar.trimmingCharacters(in: .whitespaces),
+            aforo: aforoNum,
+            departamentoSolicitante: departamentoSolicitante,
+            horaInicio: stringHoraInicio,
+            horaFin: stringHoraFin,
+            telefonoResponsable: telefonoResponsable,
+            insumos: nil,
+            organizadorId: matriculaOrganizador,
+            categoria: categoria,
+            imageUrl: nil,
+            estado: "publicado",
+            descripcion: descripcion
+        )
+        
+        MockDatabase.shared.eventos.append(nuevoEvento)
+        
+        isSuccess = true
+        resetForm()
         isLoading = false
     }
     

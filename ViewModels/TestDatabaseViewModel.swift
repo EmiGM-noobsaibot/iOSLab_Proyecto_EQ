@@ -2,6 +2,7 @@ import Foundation
 #if canImport(Combine)
 import Combine
 #endif
+
 @MainActor
 class TestDatabaseViewModel: ObservableObject {
     @Published var eventos: [Evento] = []
@@ -15,17 +16,13 @@ class TestDatabaseViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            print("🚀 Iniciando petición a la tabla 'Eventos' en Supabase...")
+            print("🚀 Iniciando petición a la BD Mock...")
             
-            // Hacemos un SELECT a la tabla Eventos usando el cliente global de `SupabaseClient.swift`
-            let response: [Evento] = try await supabase
-                .from("Eventos")
-                .select()
-                .execute()
-                .value
+            try await Task.sleep(nanoseconds: 500_000_000)
+            let response = MockDatabase.shared.eventos
             
             self.eventos = response
-            print("✅ ¡Éxito! Se descargaron \(response.count) eventos.")
+            print("✅ ¡Éxito! Se descargaron \(response.count) eventos de prueba.")
         } catch {
             print("❌ Error de Conexión: \(error)")
             self.errorMessage = error.localizedDescription
