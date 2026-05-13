@@ -42,7 +42,8 @@ class EventoViewModel: ObservableObject {
             return
         }
         
-        guard let aforoNum = Double(aforoTexto) else {
+        let aforoLimpio = aforoTexto.trimmingCharacters(in: .whitespaces)
+        guard let aforoNum = Double(aforoLimpio) else {
             errorMessage = "El aforo debe detallarse numéricamente (ej. 100)."
             return
         }
@@ -55,8 +56,8 @@ class EventoViewModel: ObservableObject {
         errorMessage = nil
         isSuccess = false
         
-        // Simular latencia
-        try? await Task.sleep(nanoseconds: 500_000_000)
+        // Simular latencia para mejor UX visual
+        try? await Task.sleep(nanoseconds: 800_000_000)
         
         let nuevoId = (MockDatabase.shared.eventos.map { $0.id }.max() ?? 0) + 1
         
@@ -66,16 +67,16 @@ class EventoViewModel: ObservableObject {
             nombreEvento: nombreEvento.trimmingCharacters(in: .whitespaces),
             lugar: lugar.trimmingCharacters(in: .whitespaces),
             aforo: aforoNum,
-            departamentoSolicitante: departamentoSolicitante,
+            departamentoSolicitante: departamentoSolicitante.trimmingCharacters(in: .whitespaces),
             horaInicio: stringHoraInicio,
             horaFin: stringHoraFin,
-            telefonoResponsable: telefonoResponsable,
+            telefonoResponsable: telefonoResponsable.trimmingCharacters(in: .whitespaces),
             insumos: nil,
             organizadorId: matriculaOrganizador,
             categoria: categoria,
             imageUrl: nil,
             estado: "publicado",
-            descripcion: descripcion
+            descripcion: descripcion.trimmingCharacters(in: .whitespaces).isEmpty ? nil : descripcion.trimmingCharacters(in: .whitespaces)
         )
         
         MockDatabase.shared.eventos.append(nuevoEvento)
