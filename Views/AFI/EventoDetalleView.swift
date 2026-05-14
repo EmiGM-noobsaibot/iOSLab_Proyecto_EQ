@@ -6,8 +6,13 @@ struct EventoDetalleView: View {
     
     // Inyectamos el ViewModel de AFI list que opera las inscripciones
     @StateObject private var viewModel = AFIListViewModel()
+    @EnvironmentObject var authService: AuthService
     @State private var inscripcionEnVuelo = false
     
+    var currentUserMatricula: Double {
+        Double(authService.currentUser ?? "123456") ?? 123456.0
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -116,8 +121,7 @@ struct EventoDetalleView: View {
                     Button(action: {
                         Task {
                             inscripcionEnVuelo = true
-                            // TODO: Cambiar '99999' temporal por 'authService.perfilLocal.matricula'
-                            await viewModel.inscribirmeAEvento(eventoId: evento.id, alumnoId: 99999)
+                            await viewModel.inscribirmeAEvento(eventoId: evento.id, alumnoId: currentUserMatricula)
                             inscripcionEnVuelo = false
                         }
                     }) {

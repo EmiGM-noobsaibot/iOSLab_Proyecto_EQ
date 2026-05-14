@@ -74,7 +74,7 @@ Gracias a las barreras lógicas creadas con etiquetas condicionales **`#if canIm
 
 1.  **Abre "iOSLab_Proyecto_EQ.xcodeproj"**: Tan rápido clonas el Repo de GitHub y lo extraes en tu Mac, ejecuta el archivo padre.
 2.  **SDK Autónomo**: Gracias a que limpiamos el repo con un `gitignore` estricto en el paquete independiente de desarrollo, verás que tu Xcode descargará instantáneamente e íntegramente la versión pulida oficial de tu *Supabase SDK*. 
-3.  **Configura el Arte Gráfico**: En `Assets.xcassets`, arrastra el logo original universitario `UANL-Logo.png`.
+3.  **Configura el Arte Gráfico**: En `Assets.xcassets`, arrastra el logo original universitario `MICU-Logo.png`.
 4.  ¡**Rueda el Simulador**! Todos los imports se detectarán como `True` de cara a SwiftUI local activando el gigantesco mundo visual que creamos y lo unirá con un cable transparente a la base lógica de los `.swift` que jamás chocarán en entorno ni compilarán en desorden.
 
 ---

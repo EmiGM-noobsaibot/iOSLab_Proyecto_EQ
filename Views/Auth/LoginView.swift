@@ -13,7 +13,7 @@ struct LoginView: View {
                     Spacer()
                     
                     // Logo de UANL
-                    Image("UANL-Logo") // La imagen descargada debe arrastrarse al Assets.xcassets de Xcode
+                    Image("MICU-Logo") // La imagen descargada debe arrastrarse al Assets.xcassets de Xcode
                         .resizable()
                         .scaledToFit()
                         .frame(width: 150, height: 150)

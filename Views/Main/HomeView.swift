@@ -112,7 +112,7 @@ struct HomeView: View {
             }
             .navigationTitle("Mi Calendario")
             .navigationBarItems(
-                leading: Image("UANL-Logo").resizable().frame(width: 30, height: 30),
+                leading: Image("MICU-Logo").resizable().frame(width: 30, height: 30),
                 trailing: Menu {
                     Button("Configuración UI y Tema", action: { })
                     Button("Cerrar Sesión", role: .destructive, action: {

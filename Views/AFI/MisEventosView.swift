@@ -91,8 +91,7 @@ struct MisEventosView: View {
             .navigationTitle("Mi Portafolio")
             .onAppear {
                 Task {
-                    // PLACEHOLDER: Debemos reemplazar este userID por el UUID/Matrícula real luego
-                    let simulatedUserId: Double = 1234567 
+                    let simulatedUserId: Double = Double(authService.currentUser ?? "1234567") ?? 1234567.0
                     await viewModel.fetchCarteleraEventos()
                     await viewModel.fetchMisActividades(matricula: simulatedUserId)
                 }

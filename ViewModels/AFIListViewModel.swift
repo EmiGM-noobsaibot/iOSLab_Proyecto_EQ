@@ -52,7 +52,7 @@ class AFIListViewModel: ObservableObject {
     }
     
     /// Motor: Acción para que el estudiante dé click en "Inscribirme"
-    func inscribirmeAEvento(eventoId: Int, matricula: Double) async {
+    func inscribirmeAEvento(eventoId: Int, alumnoId: Double) async {
         errorMessage = nil
         
         // Verificar si ya está inscrito
@@ -60,10 +60,10 @@ class AFIListViewModel: ObservableObject {
             return
         }
         
-        let nueva = Inscripcion(id: UUID(), eventoId: eventoId, alumnoId: matricula, signedUpAt: Date().description, finalizada: false)
+        let nueva = Inscripcion(id: UUID(), eventoId: eventoId, alumnoId: alumnoId, signedUpAt: Date().description, finalizada: false)
         MockDatabase.shared.inscripciones.append(nueva)
         
-        await fetchMisActividades(matricula: matricula)
+        await fetchMisActividades(matricula: alumnoId)
     }
     
     /// Motor: Lógica Crítica - Finalizar AFI
