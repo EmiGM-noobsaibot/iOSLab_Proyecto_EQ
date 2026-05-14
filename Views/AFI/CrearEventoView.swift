@@ -3,8 +3,11 @@ import SwiftUI
 #if canImport(SwiftUI)
 struct CrearEventoView: View {
     @StateObject private var viewModel = EventoViewModel()
-    // Matricula temporal (idealmente inyectada del Auth global)
-    let organizadorID: Double = 123456
+    @EnvironmentObject var authService: AuthService
+
+    var organizadorID: Double {
+        Double(authService.currentUser ?? "123456") ?? 123456.0
+    }
     
     var body: some View {
         NavigationView {

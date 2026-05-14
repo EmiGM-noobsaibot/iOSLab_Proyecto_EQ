@@ -4,7 +4,7 @@ import SwiftUI
 struct ContactoView: View {
     var body: some View {
         VStack(spacing: 30) {
-            Image("UANL-Logo") // Asume logo en xcassets
+            Image("MICU-Logo") // Asume logo en xcassets
                 .resizable()
                 .scaledToFit()
                 .frame(width: 120, height: 120)

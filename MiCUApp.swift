@@ -10,7 +10,7 @@ struct MiCUApp: App {
             if authService.isLoading {
                 // Splash screen o vista de carga mientras se verifica la sesión
                 VStack {
-                    Image("UANL-Logo") // Nuestra imagen 
+                    Image("MICU-Logo") // Nuestra imagen
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)

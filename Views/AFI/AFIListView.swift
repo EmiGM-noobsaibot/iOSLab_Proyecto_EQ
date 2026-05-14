@@ -66,7 +66,7 @@ struct AFIListView: View {
                 } else {
                     List(viewModel.carteleraFiltrada) { evento in
                         // Envolver en NavigationLink para ir al Detalle general (AFI/DetalleView)
-                        NavigationLink(destination: Text("Próximamente: Detalle exacto de \(evento.nombreEvento ?? "")")) {
+                        NavigationLink(destination: EventoDetalleView(evento: evento)) {
                             EventoRowCard(evento: evento)
                         }
                     }
